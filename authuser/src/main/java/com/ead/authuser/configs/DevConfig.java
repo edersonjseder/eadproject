@@ -1,4 +1,4 @@
-package com.ead.authuser.config;
+package com.ead.authuser.configs;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

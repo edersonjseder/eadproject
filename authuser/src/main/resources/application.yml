@@ -1,2 +1,8 @@
 server:
   port: 8051
+  servlet:
+    context-path: /auth_user
+
+spring:
+  profiles:
+    active: dev
