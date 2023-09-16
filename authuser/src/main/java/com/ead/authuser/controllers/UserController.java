@@ -4,7 +4,7 @@ import com.ead.authuser.dtos.UserDto;
 import com.ead.authuser.responses.ImageResponse;
 import com.ead.authuser.responses.PasswordResponse;
 import com.ead.authuser.services.UserService;
-import com.ead.authuser.specifications.specs.UserSpec;
+import com.ead.authuser.specifications.UserSpec;
 import com.ead.authuser.utils.UserUtils;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.RequiredArgsConstructor;
