@@ -1,0 +1,97 @@
+package com.ead.course.services;
+
+import com.ead.course.dtos.CourseDto;
+import com.ead.course.enums.CourseLevel;
+import com.ead.course.enums.CourseStatus;
+import com.ead.course.exceptions.CourseException;
+import com.ead.course.exceptions.CourseNotFoundException;
+import com.ead.course.models.Course;
+import com.ead.course.repositories.CourseRepository;
+import com.ead.course.repositories.LessonRepository;
+import com.ead.course.repositories.ModuleRepository;
+import com.ead.course.utils.CourseUtils;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.UUID;
+
+import static com.ead.course.constants.CourseMessagesConstants.COURSE_NAME_EXISTENTE_MENSAGEM;
+
+@Service
+@RequiredArgsConstructor
+public class CourseService {
+    private final CourseRepository courseRepository;
+    private final ModuleRepository moduleRepository;
+    private final LessonRepository lessonRepository;
+    private final CourseUtils courseUtils;
+
+    public Page<CourseDto> findAllCourses(Specification<Course> spec, Pageable pageable) {
+        return courseUtils.toListCourseDto(courseRepository.findAll(spec, pageable));
+    }
+
+    public Course getOneCourse(UUID id) {
+        return courseRepository.findById(id)
+                .orElseThrow(() -> new CourseNotFoundException(id));
+    }
+
+    @Transactional
+    public CourseDto saveCourse(CourseDto courseDto) {
+        Course course;
+
+        if (courseDto.getId() == null) {
+            if (courseRepository.existsCourseByName(courseDto.getName())) {
+                throw new CourseException(COURSE_NAME_EXISTENTE_MENSAGEM + courseDto.getName());
+            }
+
+            course = new Course();
+
+            BeanUtils.copyProperties(courseDto, course);
+
+            course.setCourseStatus(CourseStatus.valueOf(courseDto.getCourseStatus()));
+            course.setCourseLevel(CourseLevel.valueOf(courseDto.getCourseLevel()));
+            course.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
+
+        } else {
+            course = courseRepository.findById(courseDto.getId()).orElseThrow(() -> new CourseNotFoundException(courseDto.getId()));
+
+            course.setName(courseDto.getName());
+            course.setDescription(courseDto.getDescription());
+            course.setImageUrl(courseDto.getImageUrl());
+            course.setCourseStatus(CourseStatus.valueOf(courseDto.getCourseStatus()));
+            course.setCourseLevel(CourseLevel.valueOf(courseDto.getCourseLevel()));
+        }
+
+        course.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+
+        return courseUtils.toCourseDto(courseRepository.save(course));
+    }
+
+    @Transactional
+    public void removeCourse(UUID id) {
+        var course = courseRepository.findById(id);
+
+        if (course.isPresent()) {
+            var modules = moduleRepository.findAllModulesIntoCourse(id);
+            if (!modules.isEmpty()) {
+                modules.forEach(module -> {
+                    var lessons = lessonRepository.findAllLessonsIntoModule(module.getId());
+                    if (!lessons.isEmpty()) {
+                        lessonRepository.deleteAll(lessons);
+                    }
+                });
+                moduleRepository.deleteAll(modules);
+            }
+            courseRepository.deleteById(id);
+        } else {
+            throw new CourseNotFoundException(id);
+        }
+    }
+}

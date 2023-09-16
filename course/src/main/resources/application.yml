@@ -1,0 +1,8 @@
+server:
+  port: 8052
+  servlet:
+    context-path: /courses
+
+spring:
+  profiles:
+    active: dev
