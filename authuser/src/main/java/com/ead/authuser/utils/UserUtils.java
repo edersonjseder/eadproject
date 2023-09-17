@@ -5,6 +5,7 @@ import com.ead.authuser.models.User;
 import com.ead.authuser.responses.ImageResponse;
 import com.ead.authuser.responses.PasswordResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
@@ -15,11 +16,13 @@ import java.util.stream.Collectors;
 import static com.ead.authuser.constants.UserMessagesConstants.USUARIO_IMAGE_SUCESSO_MENSAGEM;
 import static com.ead.authuser.constants.UserMessagesConstants.USUARIO_SENHA_SUCESSO_MENSAGEM;
 
+@Log4j2
 @Component
 @RequiredArgsConstructor
 public class UserUtils {
     private final DateUtils dateUtils;
     public UserDto toUserDto(User user) {
+        log.debug("Method toUserDto user saved {} ", user.toString());
         return UserDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())

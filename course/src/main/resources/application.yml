@@ -6,3 +6,13 @@ server:
 spring:
   profiles:
     active: dev
+  output:
+    ansi:
+      enabled: always
+
+logging:
+  level:
+    com.ead: TRACE
+    root: info
+    org.springframework.web: debug
+    org.hibernate: info

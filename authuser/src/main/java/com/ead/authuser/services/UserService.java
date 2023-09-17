@@ -12,6 +12,7 @@ import com.ead.authuser.responses.PasswordResponse;
 import com.ead.authuser.utils.UserUtils;
 import com.ead.authuser.utils.ValidaCPF;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,7 @@ import static com.ead.authuser.constants.UserMessagesConstants.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -69,6 +71,7 @@ public class UserService {
             user.setUserType(UserType.STUDENT);
             user.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
             user.setCurrentPasswordDate(LocalDateTime.now(ZoneId.of("UTC")));
+            log.debug("Method saveUser user created {} ", user.toString());
 
         } else {
             user = userRepository.findById(userDto.getId()).orElseThrow(() -> new UserNotFoundException(userDto.getId()));
@@ -77,6 +80,7 @@ public class UserService {
             user.setPhoneNumber(userDto.getPhoneNumber());
             user.setUserStatus(UserStatus.valueOf(userDto.getStatus()));
             user.setUserType(UserType.valueOf(userDto.getType()));
+            log.debug("Method saveUser user updated {} ", user.toString());
         }
 
         user.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
