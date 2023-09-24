@@ -3,6 +3,7 @@ package com.ead.course.controllers;
 import com.ead.course.dtos.CourseDto;
 import com.ead.course.services.CourseService;
 import com.ead.course.specifications.CourseSpec;
+import com.ead.course.specifications.SpecificationTemplate;
 import com.ead.course.utils.CourseUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +27,15 @@ public class CourseController {
     private final CourseUtils courseUtils;
 
     @GetMapping(value = "/all")
-    public ResponseEntity<Page<CourseDto>> getAllCourses(@PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable, CourseSpec spec) {
-        var coursePage = courseService.findAllCourses(spec, pageable);
+    public ResponseEntity<Page<CourseDto>> getAllCourses(@PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
+                                                         CourseSpec spec, @RequestParam(required = false) UUID userId) {
+        Page<CourseDto> coursePage;
+
+        if (userId != null) {
+            coursePage = courseService.findAllCourses(SpecificationTemplate.courseUserId(userId).and(spec), pageable);
+        } else {
+            coursePage = courseService.findAllCourses(spec, pageable);
+        }
 
         // Hateoas link creation snippet
         if (!coursePage.isEmpty()) {

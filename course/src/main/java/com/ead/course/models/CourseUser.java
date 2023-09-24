@@ -23,9 +23,9 @@ public class CourseUser implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
+    @Column(nullable = false)
+    private UUID userId;
     @ManyToOne(targetEntity = Course.class, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "course_id", foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT, name = "course_fk"))
     private Course course;
-    @Column(nullable = false)
-    private UUID userId;
 }

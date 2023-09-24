@@ -4,6 +4,7 @@ import com.ead.authuser.dtos.UserDto;
 import com.ead.authuser.responses.ImageResponse;
 import com.ead.authuser.responses.PasswordResponse;
 import com.ead.authuser.services.UserService;
+import com.ead.authuser.specifications.SpecificationTemplate;
 import com.ead.authuser.specifications.UserSpec;
 import com.ead.authuser.utils.UserUtils;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -31,8 +32,15 @@ public class UserController {
     private final UserUtils userUtils;
 
     @GetMapping("/all")
-    public ResponseEntity<Page<UserDto>> getAllUsers(@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable, UserSpec spec) {
-        var userPage = userService.findAllUsers(spec, pageable);
+    public ResponseEntity<Page<UserDto>> getAllUsers(@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
+                                                     UserSpec spec, @RequestParam(required = false) UUID courseId) {
+        Page<UserDto> userPage;
+
+        if (courseId != null) {
+            userPage = userService.findAllUsers(SpecificationTemplate.userCourseId(courseId).and(spec), pageable);
+        } else {
+            userPage = userService.findAllUsers(spec, pageable);
+        }
 
         // Hateoas link creation snippet
         if (!userPage.isEmpty()) {
