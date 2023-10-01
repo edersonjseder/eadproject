@@ -5,7 +5,6 @@ import com.ead.course.services.CourseService;
 import com.ead.course.specifications.CourseSpec;
 import com.ead.course.specifications.SpecificationTemplate;
 import com.ead.course.utils.CourseUtils;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -53,13 +53,13 @@ public class CourseController {
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<CourseDto> registerCourse(@RequestBody @Valid CourseDto courseDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.saveCourse(courseDto));
+    public ResponseEntity<CourseDto> registerCourse(@RequestBody CourseDto courseDto, Errors errors) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.saveCourse(courseDto, errors));
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<CourseDto> updateCourse(@RequestBody CourseDto courseDto) {
-        return ResponseEntity.ok(courseService.saveCourse(courseDto));
+    public ResponseEntity<CourseDto> updateCourse(@RequestBody CourseDto courseDto, Errors errors) {
+        return ResponseEntity.ok(courseService.saveCourse(courseDto, errors));
     }
 
     @DeleteMapping(value = "/remove/{id}")

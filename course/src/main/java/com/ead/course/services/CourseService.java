@@ -10,21 +10,27 @@ import com.ead.course.repositories.CourseRepository;
 import com.ead.course.repositories.LessonRepository;
 import com.ead.course.repositories.ModuleRepository;
 import com.ead.course.utils.CourseUtils;
+import com.ead.course.validations.CourseValidator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.Errors;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.ead.course.constants.CourseMessagesConstants.COURSE_NAME_EXISTENTE_MENSAGEM;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CourseService {
@@ -32,6 +38,7 @@ public class CourseService {
     private final ModuleRepository moduleRepository;
     private final LessonRepository lessonRepository;
     private final CourseUtils courseUtils;
+    private final CourseValidator courseValidator;
 
     public Page<CourseDto> findAllCourses(Specification<Course> spec, Pageable pageable) {
         return courseUtils.toListCourseDto(courseRepository.findAll(spec, pageable));
@@ -43,8 +50,15 @@ public class CourseService {
     }
 
     @Transactional
-    public CourseDto saveCourse(CourseDto courseDto) {
+    public CourseDto saveCourse(CourseDto courseDto, Errors errors) {
         Course course;
+
+        courseValidator.validate(courseDto, errors);
+
+        if (errors.hasErrors()) {
+            log.error(errors.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining(", ")));
+            throw new CourseException(errors.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining(", ")));
+        }
 
         if (courseDto.getId() == null) {
             if (courseRepository.existsCourseByName(courseDto.getName())) {
