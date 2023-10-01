@@ -15,12 +15,12 @@ import java.util.UUID;
 
 @FeignClient(name = "${ead.auth-user.url}", configuration = FeignConfig.class)
 public interface AuthUserClientFeign {
-    @GetMapping(path = "/auth_user/users/all")
+    @GetMapping(path = "/users/all")
     Page<UserDto> getUsersByCourse(@SpringQueryMap CourseClientParams params);
 
-    @GetMapping(path = "/auth_user/users/{id}")
+    @GetMapping(path = "/users/{id}")
     UserDto getUserById(@PathVariable("id") UUID id);
 
-    @PostMapping("/auth_user/users/{id}/courses/subscribe")
+    @PostMapping("/users/{id}/courses/subscribe")
     Object postSubscriptionUserInCourse(@PathVariable("id") UUID id, UserCourseDto userCourseDto);
 }

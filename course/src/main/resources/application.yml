@@ -30,7 +30,7 @@ feign:
 ead:
   auth-user:
     name: authuser
-    url: 'ead-authuser'
+    url: 'ead-authuser/auth_user'
 
 eureka:
   client:

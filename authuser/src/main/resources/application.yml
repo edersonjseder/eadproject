@@ -22,7 +22,7 @@ logging:
 #RestTemplate URI connection between microservices
 ead:
   course:
-    url: 'http://ead-course'
+    url: 'http://ead-course/courses'
 
 eureka:
   client:

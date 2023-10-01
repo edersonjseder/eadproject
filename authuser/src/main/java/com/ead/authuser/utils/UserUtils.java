@@ -79,7 +79,7 @@ public class UserUtils {
     }
 
     public String createConnectionUrlToCourse(UUID userId, Pageable pageable) {
-        return requestUrl + "/courses/all?userId=" + userId + "&page=" + pageable.getPageNumber() + "&size=" +
+        return requestUrl + "/all?userId=" + userId + "&page=" + pageable.getPageNumber() + "&size=" +
                 pageable.getPageSize() + "&sort=" + pageable.getSort().toString().replaceAll(": ", ",");
     }
 
