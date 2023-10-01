@@ -9,6 +9,8 @@ spring:
   output:
     ansi:
       enabled: always
+  application:
+    name: ead-course
 
 logging:
   level:
@@ -28,4 +30,11 @@ feign:
 ead:
   auth-user:
     name: authuser
-    url: 'http://localhost:8051'
+    url: 'ead-authuser'
+
+eureka:
+  client:
+    service-url:
+      defaultZone: 'http://localhost:8761/eureka'
+  instance:
+    hostname: localhost

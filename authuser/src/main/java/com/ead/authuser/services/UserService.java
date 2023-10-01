@@ -7,6 +7,7 @@ import com.ead.authuser.enums.UserType;
 import com.ead.authuser.exceptions.UserException;
 import com.ead.authuser.exceptions.UserNotFoundException;
 import com.ead.authuser.models.User;
+import com.ead.authuser.repositories.UserCourseRepository;
 import com.ead.authuser.repositories.UserRepository;
 import com.ead.authuser.responses.ImageResponse;
 import com.ead.authuser.responses.PasswordResponse;
@@ -32,6 +33,7 @@ import static com.ead.authuser.constants.UserMessagesConstants.*;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final UserCourseRepository userCourseRepository;
     private final UserUtils userUtils;
 
     public Page<UserDto> findAllUsers(Specification<User> spec, Pageable pageable) {
@@ -85,7 +87,6 @@ public class UserService {
             user.setFullName(userDto.getFullName());
             user.setPhoneNumber(userDto.getPhoneNumber());
             user.setUserStatus(UserStatus.valueOf(userDto.getStatus()));
-            user.setUserType(UserType.valueOf(userDto.getType()));
             log.debug("Method saveUser user updated {} ", user.toString());
         }
 
@@ -119,8 +120,13 @@ public class UserService {
         return userUtils.toImageResponse(user);
     }
 
+    @Transactional
     public void deleteUser(UUID id) {
         var user = findUserById(id);
+        var userCourseLst = userCourseRepository.findAllUserCourseIntoUser(id);
+        if (!userCourseLst.isEmpty()) {
+            userCourseRepository.deleteAll(userCourseLst);
+        }
         userRepository.delete(user);
     }
 }

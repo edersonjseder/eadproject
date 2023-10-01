@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.UUID;
 
-@FeignClient(value = "${ead.auth-user.name}", url = "${ead.auth-user.url}", configuration = FeignConfig.class)
+@FeignClient(name = "${ead.auth-user.url}", configuration = FeignConfig.class)
 public interface AuthUserClientFeign {
     @GetMapping(path = "/auth_user/users/all")
     Page<UserDto> getUsersByCourse(@SpringQueryMap CourseClientParams params);

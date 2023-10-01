@@ -7,6 +7,7 @@ import com.ead.course.exceptions.CourseException;
 import com.ead.course.exceptions.CourseNotFoundException;
 import com.ead.course.models.Course;
 import com.ead.course.repositories.CourseRepository;
+import com.ead.course.repositories.CourseUserRepository;
 import com.ead.course.repositories.LessonRepository;
 import com.ead.course.repositories.ModuleRepository;
 import com.ead.course.utils.CourseUtils;
@@ -34,6 +35,7 @@ import static com.ead.course.constants.CourseMessagesConstants.COURSE_NAME_EXIST
 @Service
 @RequiredArgsConstructor
 public class CourseService {
+    private final CourseUserRepository courseUserRepository;
     private final CourseRepository courseRepository;
     private final ModuleRepository moduleRepository;
     private final LessonRepository lessonRepository;
@@ -102,6 +104,10 @@ public class CourseService {
                     }
                 });
                 moduleRepository.deleteAll(modules);
+            }
+            var courseUserLst = courseUserRepository.findAllCourseUserIntoCourse(id);
+            if (!courseUserLst.isEmpty()) {
+                courseUserRepository.deleteAll(courseUserLst);
             }
             courseRepository.deleteById(id);
         } else {
