@@ -1,5 +1,6 @@
 package com.ead.authuser.services;
 
+import com.ead.authuser.dtos.InstructorDto;
 import com.ead.authuser.dtos.UserDto;
 import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
@@ -22,12 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
 import java.util.UUID;
 
 import static com.ead.authuser.constants.UserMessagesConstants.*;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Log4j2
 @Service
@@ -43,6 +41,14 @@ public class UserService {
     public User findUserById(UUID id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
+    }
+
+    @Transactional
+    public UserDto subscribeInstructor(InstructorDto instructorDto) {
+        var user = userRepository.findUserByEmail(instructorDto.getEmail()).orElseThrow(() -> new UserNotFoundException(instructorDto.getEmail()));
+        user.setUserType(UserType.INSTRUCTOR);
+        user.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+        return userUtils.toUserDto(user);
     }
 
     @Transactional
@@ -100,7 +106,7 @@ public class UserService {
         user.setCurrentPasswordDate(LocalDateTime.now(ZoneId.of("UTC")));
         user.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
 
-        return userUtils.toPasswordResponse(userRepository.save(user));
+        return userUtils.toPasswordResponse(user);
     }
 
     @Transactional
@@ -110,7 +116,7 @@ public class UserService {
         user.setImageUrl(userDto.getImageUrl());
         user.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
 
-        return userUtils.toImageResponse(userRepository.save(user));
+        return userUtils.toImageResponse(user);
     }
 
     public void deleteUser(UUID id) {
