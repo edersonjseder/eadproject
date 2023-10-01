@@ -18,7 +18,8 @@ public class CorsFilterConfig implements Filter {
 
     public static final String[] ALLOWED_ORIGINS = {
             "http://localhost:4200",
-            "http://localhost:5000"
+            "http://localhost:5000",
+            "http://localhost:8051"
     };
     public static final String[] METHODS_LIST = {"GET", "POST", "PUT", "PATCH", "DELETE", "OPTION"};
     public static final String[] HEADERS = {"accept", "apikey", "Authorization"};

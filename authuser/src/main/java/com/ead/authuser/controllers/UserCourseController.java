@@ -31,7 +31,7 @@ public class UserCourseController {
 
     @PostMapping("/users/{id}/courses/subscribe")
     public ResponseEntity<UserCourseDto> subscribeUserInCourse(@PathVariable(value = "id") UUID id,
-                                                                 @RequestBody @Valid UserCourseDto userCourseDto) {
+                                                               @RequestBody @Valid UserCourseDto userCourseDto) {
         return ResponseEntity.status(CREATED).body(userCourseService.saveSubscription(id, userCourseDto));
     }
 }

@@ -17,6 +17,14 @@ logging:
     org.springframework.web: debug
     org.hibernate: info
 
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: BASIC
+        connectTimeout: 160000000
+        readTimeout: 160000000
+
 ead:
   auth-user:
     name: authuser
