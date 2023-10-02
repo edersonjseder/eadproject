@@ -2,10 +2,12 @@ package com.ead.authuser.services;
 
 import com.ead.authuser.dtos.UserCourseDto;
 import com.ead.authuser.exceptions.UserCourseException;
+import com.ead.authuser.exceptions.UserCourseNotFoundException;
 import com.ead.authuser.repositories.UserCourseRepository;
 import com.ead.authuser.utils.UserCourseUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -26,5 +28,13 @@ public class UserCourseService {
         }
 
         return userCourseUtils.toUserCourseDto(userCourseRepository.save(userCourseUtils.toUserCourse(userCourseDto, user)));
+    }
+
+    @Transactional
+    public void removeUserCourseByCourse(UUID courseId) {
+        if (!userCourseRepository.existsByCourseId(courseId)) {
+            throw new UserCourseNotFoundException(courseId);
+        }
+        userCourseRepository.deleteAllByCourseId(courseId);
     }
 }

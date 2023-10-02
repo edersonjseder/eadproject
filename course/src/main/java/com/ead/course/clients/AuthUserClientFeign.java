@@ -7,6 +7,7 @@ import com.ead.course.dtos.UserDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,4 +24,7 @@ public interface AuthUserClientFeign {
 
     @PostMapping("/users/{id}/courses/subscribe")
     Object postSubscriptionUserInCourse(@PathVariable("id") UUID id, UserCourseDto userCourseDto);
+
+    @DeleteMapping(path = "/users/courses/{courseId}")
+    void removeCourseInAuthUser(@PathVariable("courseId") UUID courseId);
 }

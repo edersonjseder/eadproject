@@ -1,5 +1,6 @@
 package com.ead.course.services;
 
+import com.ead.course.clients.AuthUserClientFeign;
 import com.ead.course.dtos.CourseDto;
 import com.ead.course.enums.CourseLevel;
 import com.ead.course.enums.CourseStatus;
@@ -41,6 +42,7 @@ public class CourseService {
     private final LessonRepository lessonRepository;
     private final CourseUtils courseUtils;
     private final CourseValidator courseValidator;
+    private final AuthUserClientFeign authUserClientFeign;
 
     public Page<CourseDto> findAllCourses(Specification<Course> spec, Pageable pageable) {
         return courseUtils.toListCourseDto(courseRepository.findAll(spec, pageable));
@@ -92,6 +94,7 @@ public class CourseService {
 
     @Transactional
     public void removeCourse(UUID id) {
+        boolean delCourseUserInAuthUser = false;
         var course = courseRepository.findById(id);
 
         if (course.isPresent()) {
@@ -108,8 +111,13 @@ public class CourseService {
             var courseUserLst = courseUserRepository.findAllCourseUserIntoCourse(id);
             if (!courseUserLst.isEmpty()) {
                 courseUserRepository.deleteAll(courseUserLst);
+                delCourseUserInAuthUser = true;
             }
             courseRepository.deleteById(id);
+
+            if (delCourseUserInAuthUser) {
+                authUserClientFeign.removeCourseInAuthUser(id);
+            }
         } else {
             throw new CourseNotFoundException(id);
         }

@@ -6,7 +6,9 @@ import com.ead.course.dtos.SubscriptionDto;
 import com.ead.course.dtos.UserCourseDto;
 import com.ead.course.dtos.UserDto;
 import com.ead.course.exceptions.CourseException;
+import com.ead.course.exceptions.CourseNotFoundException;
 import com.ead.course.exceptions.CourseUserException;
+import com.ead.course.repositories.CourseRepository;
 import com.ead.course.repositories.CourseUserRepository;
 import com.ead.course.utils.CourseUserUtils;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +29,15 @@ public class CourseUserService {
     private final CourseService courseService;
     private final CourseUserUtils courseUserUtils;
     private final AuthUserClientFeign authUserClientFeign;
+    private final CourseRepository courseRepository;
 
     public Page<UserDto> getUsersByCourse(UUID courseId, Pageable pageable) {
+        var course = courseRepository.findById(courseId);
+
+        if (course.isEmpty()) {
+            throw new CourseNotFoundException(courseId);
+        }
+
         return authUserClientFeign.getUsersByCourse(CourseClientParams.builder()
                 .courseId(courseId)
                 .page(pageable.getPageNumber())
